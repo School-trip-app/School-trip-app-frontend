@@ -1,14 +1,31 @@
-import React, { useState } from 'react';
-import './travel.scss';
+import React from 'react';
+import './travel.css';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { dataDigitalBestSeller } from '../../data';
-import imgGirl from '../../assets/logo.png.webp';
+// import { dataDigitalBestSeller } from '../../data';
+// import imgGirl from '../../assets/logo.png.webp';
+import Card from '../../pages/Events/card/Card';
+import { useSelector, useDispatch } from "react-redux";
+import { getpackagesAsync, selectpackages } from '../../store/package-re';
+import { useEffect } from 'react';
+// import { Routes, Route, useNavigate } from 'react-router-dom';
+
 
 
 function Travel() {
-  const [defaultImage, setDefaultImage] = useState({});
+
+  const dispatch = useDispatch();
+  const packages = useSelector(selectpackages);
+  if (packages.length > 0) {
+    console.log(packages);
+  }
+
+  useEffect(() => {
+    dispatch(getpackagesAsync());
+  }, [dispatch]);
+
+  // const [defaultImage, setDefaultImage] = useState({});
   const settings = {
     dots: true,
     infinite: false,
@@ -44,13 +61,13 @@ function Travel() {
     ],
   };
 
-  const handleErrorImage = (data) => {
-    setDefaultImage((prev) => ({
-      ...prev,
-      [data.target.alt]: data.target.alt,
-      linkDefault: imgGirl,
-    }));
-  };
+  // const handleErrorImage = (data) => {
+  //   setDefaultImage((prev) => ({
+  //     ...prev,
+  //     [data.target.alt]: data.target.alt,
+  //     linkDefault: imgGirl,
+  //   }));
+  // };
 
   return (
     <div className='travel-home section__padding'>
@@ -59,32 +76,14 @@ function Travel() {
         <h1>Upcoming Events</h1>
       </div>
       <Slider {...settings}>
-        {dataDigitalBestSeller.map((item) => (
-          <div className="card">
-            <div className="card-top">
-              <img
-                src={
-                  defaultImage[item.title] === item.title
-                    ? defaultImage.linkDefault
-                    : item.linkImg
-                }
-                alt={item.title}
-                onError={handleErrorImage}
-              />
-            </div>
-            <div className="card-bottom">
-              <div className='card-text'>
-            <h1>{item.title}</h1>
-            <h1 className='price'>{item.price}</h1>
-            </div>
-            <div className='card-date'>
-             <h3 className='month'>12 Jan - 18 Jan</h3>
-             <h3 className='days'>5 Days</h3>
-            </div>
-            </div>
+        {packages.length > 0 && packages.map((item) => {
+          return (
+            <Card key={item.id} packageName={item.packageName} price={item.price} date={item.tripDate} time={`${item.startingTime} - ${item.startingTime}`} image={item.packageImages} city={item.city}
+              data={item}
+            />
 
-          </div>
-        ))}
+          )
+        })}
       </Slider>
     </div>
   )
